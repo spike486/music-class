@@ -2,210 +2,191 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>巴洛克音乐课件 (本地视频版)</title>
-    <!-- 引入字体和图标库 (使用国内CDN，确保速度) -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>巴洛克音乐课件 (自适应版)</title>
     <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <style>
-/* 1. 全局设置 */
+/* --- 1. 全局基础设置 --- */
 * { box-sizing: border-box; }
 
 body {
   background-color: #f3f4f6;
   margin: 0;
-  padding: 32px;
-  display: grid;
-  justify-items: center;
-  gap: 32px;
+  padding: 20px; /* 缩小内边距以适应移动端 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
   color: #3c4043;
-  /* 使用系统自带字体，无需联网，速度最快 */
   font-family: "Microsoft YaHei", "Heiti SC", "Segoe UI", sans-serif;
 }
 
+/* --- 2. 容器自适应核心 --- */
 .slide-container {
-  align-items: center;
   background-color: #fff3dd;
-  border-radius: 30px;
+  border-radius: 20px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  height: 720px;
-  justify-content: center;
-  overflow: hidden;
-  padding: 40px;
+  padding: 30px;
   position: relative;
-  width: 1280px;
+  /* 关键修改：不再固定宽高，而是限制最大宽度 */
+  width: 100%;
+  max-width: 1200px;
+  min-height: 600px; /* 保证最小高度，内容多会自动撑开 */
+  margin: 0 auto;
 }
 
-/* 2. 排版字体 */
-h1, h2, h3 { margin: 0; line-height: 1.2; font-weight: 700; color: #3c4043; }
-p, li { font-size: 22px; line-height: 1.6; margin: 0; }
-ul { padding-left: 25px; margin: 0; }
-li { margin-bottom: 10px; }
+/* 移动端特殊调整 */
+@media (max-width: 768px) {
+    body { padding: 10px; }
+    .slide-container {
+        padding: 20px;
+        min-height: auto; /* 手机上高度随内容走 */
+    }
+}
+
+/* --- 3. 排版自适应 --- */
+h1 { font-size: clamp(36px, 5vw, 88px); line-height: 1.1; color: #854d0e; margin: 0; }
+h2 { font-size: clamp(28px, 4vw, 52px); margin: 0 0 20px 0; color: #3c4043; }
+h3 { font-size: 24px; margin: 0 0 10px 0; color: #854d0e; }
+p, li { font-size: clamp(18px, 2vw, 22px); line-height: 1.6; margin: 0; }
+ul { padding-left: 20px; margin: 0; }
+li { margin-bottom: 8px; }
 
 .slide-title {
-  font-size: 52px;
   text-align: left;
   width: 100%;
-  margin-bottom: 32px;
+  margin-bottom: 20px;
   color: #854d0e;
-  border-bottom: 3px solid #e0c090;
-  padding-bottom: 15px;
+  border-bottom: 2px solid #e0c090;
+  padding-bottom: 10px;
 }
 
-/* 3. 布局: 标题页 */
+.subtitle { font-size: clamp(18px, 3vw, 28px); color: #5f6368; margin-top: 10px; }
+
+/* --- 4. 布局系统 --- */
+
+/* 标题页布局 */
 .title-layout {
   background-color: #fffaf1;
-  border-radius: 40px;
+  border-radius: 20px;
   border: 1px solid #3c4043;
-  padding: 40px;
-  display: grid;
-  gap: 20px;
-  grid-template-rows: 1fr auto;
-  align-items: self-end;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
   height: 100%;
+  min-height: 400px;
   width: 100%;
-  position: relative;
+  text-align: center; /* 手机居中更好看 */
 }
-.title-layout h1 { font-size: 88px; color: #854d0e; }
-.title-layout .subtitle { font-size: 28px; color: #5f6368; }
 
-/* 4. 布局: 图文/视频 混排 */
+/* 双栏布局 (左文右图 -> 上文下图) */
 .content-area {
   display: flex;
+  flex-direction: column; /* 默认手机优先：垂直排列 */
+  gap: 20px;
   width: 100%;
   height: 100%;
-  align-items: center;
-  gap: 40px;
 }
 
-.two-column {
-  display: flex;
-  gap: 40px;
-  width: 100%;
-  height: 100%;
-  align-items: center; /* 垂直居中 */
+@media (min-width: 769px) {
+    .content-area {
+        flex-direction: row; /* 电脑上恢复水平排列 */
+        align-items: center;
+    }
+    .title-layout { text-align: left; }
 }
 
-.text-content {
-  flex: 0.8; /* 文字占 40% */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-/* 媒体容器 (用于包裹图片或视频框) */
+.text-content { flex: 1; }
 .media-wrapper {
-  flex: 1.2; /* 媒体占 60% */
-  height: 100%;
+  flex: 1;
+  width: 100%;
   display: flex;
-  align-items: center;
   justify-content: center;
-  background-color: #fffaf1; 
-  border-radius: 20px;
+  align-items: center;
+  background-color: #fffaf1;
+  border-radius: 15px;
   border: 1px solid #854d0e;
   overflow: hidden;
-  position: relative;
 }
 
-.media-wrapper img {
+/* 确保媒体内容自适应 */
+.media-wrapper img, 
+.media-wrapper video {
   width: 100%;
-  height: 100%;
-  object-fit: cover; /* 图片填满 */
+  height: auto; /* 高度自动 */
+  max-height: 500px; /* 限制最大高度防止占满屏幕 */
+  object-fit: contain;
 }
 
-/* 影院级视频框特别样式 */
+/* 视频框 */
 .video-box {
-  background-color: #2c2c2c; /* 深色背景衬托视频 */
+  background-color: #2c2c2c;
   border: 4px solid #fff;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
   width: 100%;
-  height: auto;
-  aspect-ratio: 16 / 9; /* 锁定视频比例 */
-  border-radius: 15px;
+  border-radius: 10px;
   overflow: hidden;
   position: relative;
+  /* 保持16:9比例 */
+  aspect-ratio: 16 / 9;
 }
+.video-box video { width: 100%; height: 100%; }
 
-.video-box video {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  display: block;
-}
-
-/* 视频标签 */
-.video-tag {
-  position: absolute;
-  top: 15px;
-  left: 15px;
-  background: rgba(255, 112, 67, 0.9);
-  color: white;
-  padding: 5px 15px;
-  border-radius: 10px;
-  font-weight: bold;
-  font-size: 14px;
-  z-index: 10;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-}
-
-/* 5. 布局: 平铺卡片 */
-.tiled-layout {
-  display: grid;
-  grid-template-rows: auto 1fr;
-  height: 100%;
-  width: 100%;
-}
+/* 平铺卡片布局 */
+.tiled-layout { width: 100%; }
 .tile-container {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 25px;
-  height: 100%;
-  align-content: center;
+  grid-template-columns: 1fr; /* 手机默认单列 */
+  gap: 20px;
 }
+
+@media (min-width: 769px) {
+    .tile-container {
+        grid-template-columns: repeat(3, 1fr); /* 电脑三列 */
+    }
+    .two-tile .tile-container {
+        grid-template-columns: 1fr 1fr; /* 电脑双列 */
+    }
+}
+
 .tile {
-  border-radius: 20px;
-  padding: 30px;
+  border-radius: 15px;
+  padding: 25px;
   background-color: #fcf6e8;
   border: 1px solid #e0c090;
-  text-align: left;
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
 }
-.tile .icon { font-size: 40px; color: #854d0e; margin-bottom: 20px; }
-.tile h3 { font-size: 28px; margin-bottom: 12px; color: #854d0e; }
-.tile p { font-size: 20px; color: #555; }
 
-/* 6. 人物介绍双栏 */
-.two-tile .tile-container { grid-template-columns: 1fr 1fr; gap: 40px; }
-.two-tile .tile { 
-  align-items: center; 
-  text-align: center; 
-  background: #fff;
-}
+/* 人物介绍圆图 */
+.two-tile .tile { align-items: center; text-align: center; background: #fff; }
 .two-tile img {
-  width: 180px;
-  height: 180px;
+  width: 150px;
+  height: 150px;
   border-radius: 50%;
   object-fit: cover;
-  border: 5px solid #854d0e;
-  margin-bottom: 20px;
-  background: #eee; /* 图片未加载时的背景色 */
+  border: 4px solid #854d0e;
+  margin-bottom: 15px;
 }
 
-/* 强调文字 */
-.highlight {
-    color: #c25e00;
-    font-weight: bold;
-    font-size: 1.1em;
+.highlight { color: #c25e00; font-weight: bold; }
+.video-tag {
+  position: absolute; top: 10px; left: 10px;
+  background: rgba(255, 112, 67, 0.9); color: white;
+  padding: 4px 10px; border-radius: 6px; font-size: 12px; z-index: 10;
 }
 
     </style>
 </head>
 <body>
 
-<!-- SLIDE 1: 标题页 -->
+<!-- 结构内容保持不变，CSS负责排版 -->
+
+<!-- SLIDE 1 -->
 <div class="slide-container">
   <div class="title-layout">
     <h1>从铁匠铺到皇宫</h1>
@@ -213,205 +194,152 @@ li { margin-bottom: 10px; }
   </div>
 </div>
 
-<!-- SLIDE 2: 铁匠铺 (含视频) -->
+<!-- SLIDE 2 -->
 <div class="slide-container">
+  <h2 class="slide-title">1. 旅程的起点</h2>
   <div class="content-area">
-    <div class="two-column">
-      <div class="text-content">
-        <h2 class="slide-title">1. 旅程的起点</h2>
-        <p>小朋友们，我们刚刚离开了毕达哥拉斯的铁匠铺。</p>
-        <br>
-        <p>那里虽然吵闹，但藏着一个秘密：<span class="highlight">大锤子（低音）和小锤子（高音）</span>如果配合得好，就会产生好听的节奏！</p>
-        <br>
-        <p>现在，我们要把这种“敲击”的能量带进皇宫。</p>
-      </div>
-      <div class="media-wrapper" style="background: transparent; border: none;">
-        <!-- 视频框 -->
-        <div class="video-box">
-            <div class="video-tag">🎬 观看：铁匠打铁</div>
-            <!-- 本地视频：blacksmith.mp4 -->
-            <video controls>
-                <source src="videos/blacksmith.mp4" type="video/mp4">
-                您的浏览器不支持视频播放，请将 blacksmith.mp4 放入文件夹。
-            </video>
-        </div>
+    <div class="text-content">
+      <p>小朋友们，故事从一个吵闹的铁匠铺开始。</p>
+      <br>
+      <p>毕达哥拉斯发现：<span class="highlight">大锤子（低音）和小锤子（高音）</span>配合好了，就有好听的节奏！</p>
+    </div>
+    <div class="media-wrapper" style="background: transparent; border: none;">
+      <div class="video-box">
+          <div class="video-tag">🎬 观看：铁匠打铁</div>
+          <video controls poster="images/blacksmith_poster.jpg">
+              <source src="videos/blacksmith.mp4" type="video/mp4">
+              <source src="blacksmith.mp4" type="video/mp4">
+          </video>
       </div>
     </div>
   </div>
 </div>
 
-<!-- SLIDE 3: 巴洛克特点 -->
+<!-- SLIDE 3 -->
 <div class="slide-container">
+  <h2 class="slide-title">巴洛克像“建造城堡”</h2>
   <div class="tiled-layout">
-    <h2 class="slide-title">什么是巴洛克？像“建造城堡”</h2>
     <div class="tile-container">
       <div class="tile">
-        <div class="icon"><i class="fa-solid fa-building-columns"></i></div>
+        <div class="icon" style="font-size:30px; color:#854d0e; margin-bottom:10px;"><i class="fa-solid fa-building-columns"></i></div>
         <h3>稳固的地基</h3>
-        <p>就像铁匠铺里的大锤子，低音始终稳稳地在下面走，撑起整座音乐城堡。</p>
+        <p>低音像大锤子，稳稳地走。</p>
       </div>
       <div class="tile">
-        <div class="icon"><i class="fa-solid fa-gem"></i></div>
+        <div class="icon" style="font-size:30px; color:#854d0e; margin-bottom:10px;"><i class="fa-solid fa-gem"></i></div>
         <h3>华丽的装饰</h3>
-        <p>巴洛克时期的人喜欢戴卷假发。音乐也是如此，充满了“小颤音”，像蕾丝花边。</p>
+        <p>像假发和蕾丝花边一样的颤音。</p>
       </div>
       <div class="tile">
-        <div class="icon"><i class="fa-solid fa-layer-group"></i></div>
+        <div class="icon" style="font-size:30px; color:#854d0e; margin-bottom:10px;"><i class="fa-solid fa-layer-group"></i></div>
         <h3>强烈的对比</h3>
-        <p>声音要么很大（大家一起唱），要么很小（一个人唱），就像上台阶一样分明。</p>
+        <p>突然大声，突然小声，像上台阶。</p>
       </div>
     </div>
   </div>
 </div>
 
-<!-- SLIDE 4: 两位大师概览 -->
+<!-- SLIDE 4 -->
 <div class="slide-container">
+  <h2 class="slide-title">两位“音乐建筑师”</h2>
   <div class="tiled-layout two-tile">
-    <h2 class="slide-title">认识两位“音乐建筑师”</h2>
     <div class="tile-container">
       <div class="tile">
-        <!-- 本地图片：请确保 images 文件夹里有 bach_portrait.jpg -->
         <img src="images/bach_portrait.jpg" alt="巴赫">
         <h3>巴赫 (Bach)</h3>
-        <p><strong>“音乐之父”</strong></p>
         <p>严谨的数学家、严肃的爸爸。</p>
       </div>
       <div class="tile">
-        <!-- 本地图片：请确保 images 文件夹里有 handel_portrait.jpg -->
         <img src="images/handel_portrait.jpg" alt="亨德尔">
         <h3>亨德尔 (Handel)</h3>
-        <p><strong>“国际巨星”</strong></p>
-        <p>热情的朋友、爱开派对。</p>
+        <p>热情的明星、爱开派对。</p>
       </div>
     </div>
   </div>
 </div>
 
-<!-- SLIDE 5: 巴赫介绍 -->
+<!-- SLIDE 5 -->
 <div class="slide-container">
+  <h2 class="slide-title">巴赫：精密的“时钟”</h2>
   <div class="content-area">
-    <div class="two-column">
-      <div class="text-content">
-        <h2 class="slide-title">巴赫：精密的“时钟”</h2>
-        <ul>
-            <li>他有20个孩子！为了教孩子弹琴，他写了很多练习曲。</li>
-            <li>他的音乐像数学一样严谨，像时钟一样精准。</li>
-            <li><strong>复调魔法：</strong>左手和右手就像两个人在聊天，互不打架。</li>
-        </ul>
-      </div>
-      <div class="media-wrapper">
-        <!-- 本地图片 -->
-        <img src="images/clock_gear.jpg" alt="精密齿轮">
-      </div>
+    <div class="text-content">
+      <ul>
+          <li>他有20个孩子，写了很多练习曲。</li>
+          <li>音乐像数学一样严谨。</li>
+          <li><strong>复调：</strong>左右手像在聊天，互不打架。</li>
+      </ul>
+    </div>
+    <div class="media-wrapper">
+      <img src="images/clock_gear.jpg" alt="精密齿轮">
     </div>
   </div>
 </div>
 
-<!-- SLIDE 6: 巴赫赏析 (含视频) -->
+<!-- SLIDE 6 -->
 <div class="slide-container">
+  <h2 class="slide-title">2. 聆赏：《小步舞曲》</h2>
   <div class="content-area">
-    <div class="two-column">
-      <div class="text-content">
-        <h2 class="slide-title">2. 聆赏：《小步舞曲》</h2>
-        <p><strong>听什么：</strong></p>
-        <ul>
-            <li>虽然是跳舞的音乐，但不是乱蹦乱跳。</li>
-            <li>要穿着礼服，迈着优雅的步子。</li>
-            <li>感受音乐的<strong>秩序感</strong>，像不像钟表在滴答走？</li>
-        </ul>
-        <br>
-        <p><i class="fa-solid fa-music"></i> 让我们来看看这首曲子！</p>
-      </div>
-      <div class="media-wrapper" style="background: transparent; border: none;">
-        <!-- 视频框 -->
-        <div class="video-box">
-            <div class="video-tag">🎬 观看：巴赫 G大调小步舞曲</div>
-            <!-- 本地视频：minuet.mp4 -->
-            <video controls>
-                <source src="videos/minuet.mp4" type="video/mp4">
-                您的浏览器不支持视频播放，请将 minuet.mp4 放入文件夹。
-            </video>
-        </div>
+    <div class="text-content">
+      <p><strong>听什么：</strong></p>
+      <ul>
+          <li>穿着礼服，迈着优雅的步子。</li>
+          <li>感受音乐的<strong>秩序感</strong>，像钟表滴答。</li>
+      </ul>
+    </div>
+    <div class="media-wrapper" style="background: transparent; border: none;">
+      <div class="video-box">
+          <div class="video-tag">🎬 观看：小步舞曲</div>
+          <video controls poster="images/minuet_poster.jpg">
+              <source src="videos/minuet.mp4" type="video/mp4">
+              <source src="minuet.mp4" type="video/mp4">
+          </video>
       </div>
     </div>
   </div>
 </div>
 
-<!-- SLIDE 7: 亨德尔介绍 -->
+<!-- SLIDE 7 -->
 <div class="slide-container">
+  <h2 class="slide-title">亨德尔：辉煌的“庆典”</h2>
   <div class="content-area">
-    <div class="two-column">
-      <div class="text-content">
-        <h2 class="slide-title">亨德尔：辉煌的“庆典”</h2>
-        <ul>
-            <li>他和巴赫不一样，他喜欢到处旅行，是大明星。</li>
-            <li>他专门给国王写音乐。</li>
-            <li>他喜欢用<strong>小号和圆号</strong>，声音洪亮，就像太阳一样辉煌，适合在户外庆祝！</li>
-        </ul>
-      </div>
-      <div class="media-wrapper">
-        <!-- 本地图片 -->
-        <img src="images/brass_instruments.jpg" alt="铜管乐器">
-      </div>
+    <div class="text-content">
+      <ul>
+          <li>他喜欢旅行，是专门给国王写歌的大明星。</li>
+          <li>喜欢用<strong>小号和圆号</strong>。</li>
+          <li>声音像太阳一样辉煌！</li>
+      </ul>
+    </div>
+    <div class="media-wrapper">
+      <img src="images/brass_instruments.jpg" alt="铜管乐器">
     </div>
   </div>
 </div>
 
-<!-- SLIDE 8: 亨德尔赏析 (含视频) -->
+<!-- SLIDE 8 -->
 <div class="slide-container">
+  <h2 class="slide-title">3. 聆赏：《水上音乐》</h2>
   <div class="content-area">
-    <div class="two-column">
-      <div class="text-content">
-        <h2 class="slide-title">3. 聆赏：《水上音乐》</h2>
-        <p><strong>听什么：</strong></p>
-        <ul>
-            <li>这是国王在泰晤士河上开船派对时听的！</li>
-            <li>听听那些响亮的号角声，是不是很神气？</li>
-            <li>音乐是用来<strong>庆祝和分享快乐</strong>的。</li>
-        </ul>
-        <br>
-        <p><i class="fa-solid fa-ship"></i> 让我们看看河上的音乐会！</p>
-      </div>
-      <div class="media-wrapper" style="background: transparent; border: none;">
-         <!-- 视频框 -->
-        <div class="video-box">
-            <div class="video-tag">🎬 观看：亨德尔 水上音乐</div>
-            <!-- 本地视频：water_music.mp4 -->
-            <video controls>
-                <source src="videos/water_music.mp4" type="video/mp4">
-                您的浏览器不支持视频播放，请将 water_music.mp4 放入文件夹。
-            </video>
-        </div>
+    <div class="text-content">
+      <p><strong>听什么：</strong></p>
+      <ul>
+          <li>国王在泰晤士河上开派对！</li>
+          <li>听听响亮的号角声。</li>
+          <li>音乐是用来<strong>分享快乐</strong>的。</li>
+      </ul>
+    </div>
+    <div class="media-wrapper" style="background: transparent; border: none;">
+      <div class="video-box">
+          <div class="video-tag">🎬 观看：水上音乐</div>
+          <video controls poster="images/water_music_poster.jpg">
+              <source src="videos/water_music.mp4" type="video/mp4">
+              <source src="water_music.mp4" type="video/mp4">
+          </video>
       </div>
     </div>
   </div>
 </div>
 
-<!-- SLIDE 9: 总结 -->
-<div class="slide-container">
-  <div class="tiled-layout two-tile">
-    <h2 class="slide-title">总结：两份礼物</h2>
-    <div class="tile-container">
-      <div class="tile">
-        <h3>巴赫爷爷的礼物</h3>
-        <br>
-        <p class="highlight">秩序与规矩</p>
-        <p>音乐是严谨的，像数学一样美。</p>
-      </div>
-      <div class="tile">
-        <h3>亨德尔爷爷的礼物</h3>
-        <br>
-        <p class="highlight">快乐与大气</p>
-        <p>音乐是宏大的，像庆典一样美。</p>
-      </div>
-    </div>
-    <div style="text-align: center; margin-top: 30px; font-size: 24px; color: #854d0e;">
-        但他们都学到了铁匠铺的秘密：<br><strong>音乐要有稳定的节奏！</strong>
-    </div>
-  </div>
-</div>
-
-<!-- SLIDE 10: 结尾 -->
+<!-- SLIDE 9 -->
 <div class="slide-container">
   <div class="title-layout">
     <h1>谢谢聆听</h1>
@@ -421,4 +349,3 @@ li { margin-bottom: 10px; }
 
 </body>
 </html>
-```
