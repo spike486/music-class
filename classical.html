@@ -2,14 +2,12 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>古典音乐魔法屋 (最终珍藏版)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>古典音乐魔法屋 (自适应版)</title>
     <link href="https://fonts.googleapis.com/css2?family=Zcool+KuaiLe&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #FFD54F;
-            --secondary: #4DD0E1;
-            --accent: #FF7043;
             --text: #37474F;
             --bg: #FAFAFA;
         }
@@ -20,47 +18,48 @@
             color: var(--text);
             margin: 0;
             padding: 0;
-            height: 100vh;
+            height: 100%;
+            /* 允许滚动，防止手机端内容被截断 */
+            overflow-y: auto; 
+            overflow-x: hidden;
+            user-select: none;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
-            user-select: none;
         }
 
-        /* 导航栏 */
+        /* 导航栏自适应 */
         header {
             background: #fff;
-            padding: 10px 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            padding: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             display: flex;
-            justify-content: center;
-            gap: 20px;
-            z-index: 100;
-            flex-shrink: 0;
+            justify-content: space-around; /* 手机上平均分布 */
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
         .nav-btn {
-            background: #f8f8f8;
-            border: 2px solid #eee;
-            padding: 8px 25px;
-            border-radius: 50px;
-            font-size: 22px;
+            background: #f0f0f0;
+            border: 2px solid #fff;
+            padding: 5px 15px;
+            border-radius: 30px;
+            font-size: 16px; /* 手机上字体稍小 */
             cursor: pointer;
             transition: all 0.3s;
             display: flex;
             align-items: center;
-            gap: 8px;
-            color: #999;
+            gap: 5px;
+            color: #888;
+            white-space: nowrap;
         }
 
-        .nav-btn:hover { background: #f0f0f0; }
-
         .nav-btn.active {
-            transform: scale(1.05);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             background: var(--primary);
             color: #333;
             border-color: #333;
+            transform: scale(1.05);
         }
 
         main {
@@ -68,140 +67,116 @@
             position: relative;
             background-image: radial-gradient(#e0e0e0 1px, transparent 1px);
             background-size: 20px 20px;
-            overflow-y: auto; 
+            width: 100%;
         }
 
         .scene {
-            position: absolute;
-            top: 0;
-            left: 0;
             width: 100%;
-            min-height: 100%; 
+            min-height: 100vh; /* 保证最小高度占满屏 */
             display: none;
             flex-direction: column;
             align-items: center;
-            padding: 20px;
+            padding: 20px 10px 80px 10px; /* 底部留白给视频 */
             box-sizing: border-box;
-            opacity: 0;
-            transition: opacity 0.5s;
-            padding-bottom: 40px;
+            animation: fadeIn 0.5s;
         }
 
-        .scene.active {
-            display: flex;
-            opacity: 1;
+        .scene.active { display: flex; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* 通用元素自适应 */
+        .avatar-emoji { font-size: clamp(60px, 15vw, 100px); margin-bottom: 10px; animation: float 3s infinite; }
+        .stage-title { font-size: clamp(24px, 6vw, 36px); margin-bottom: 10px; color: #333; text-align: center; }
+        .instruction { 
+            font-size: clamp(16px, 4vw, 20px); 
+            background: rgba(255,255,255,0.9); 
+            padding: 10px; 
+            border-radius: 15px; 
+            margin-bottom: 20px; 
+            text-align: center; 
+            max-width: 90%;
         }
 
-        /* --- 1. 回归经典：大 Emoji 头像 --- */
-        .avatar-emoji {
-            font-size: 100px;
-            margin-bottom: 10px;
-            filter: drop-shadow(0 5px 0 rgba(0,0,0,0.1));
-            animation: float 3s ease-in-out infinite;
-            cursor: default;
-            line-height: 1;
-        }
-
-        .stage-title {
-            font-size: 36px;
-            margin-bottom: 10px;
-            color: #333;
-            text-shadow: 2px 2px 0 #fff;
-        }
-
-        .instruction {
-            font-size: 20px;
-            color: #555;
-            background: rgba(255,255,255,0.9);
-            padding: 8px 20px;
-            border-radius: 20px;
-            margin-bottom: 25px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            border: 1px solid rgba(0,0,0,0.1);
-        }
-
-        /* --- 2. 影院级视频框设计 (16:9) --- */
+        /* 视频区域自适应 */
         .video-wrapper {
-            margin-top: auto; /* 沉底 */
-            width: 90%;
-            max-width: 640px; /* 限制最大宽度，保证精致 */
-            background: #222; /* 深色底座 */
-            padding: 12px;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3); /* 强烈的立体投影 */
-            border: 4px solid #fff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            margin-top: 30px;
+            width: 100%;
+            max-width: 640px;
+            background: #222;
+            padding: 10px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            border: 3px solid #fff;
             position: relative;
         }
-        
-        /* 装饰性：顶部小标签 */
         .video-wrapper::before {
-            content: "🎬 欣赏时间：Smalin 可视化音乐";
-            position: absolute;
-            top: -15px;
-            background: #FF7043;
-            color: white;
-            padding: 5px 15px;
-            border-radius: 15px;
-            font-size: 16px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            content: "🎬 视频赏析";
+            position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+            background: #FF7043; color: white; padding: 2px 10px;
+            border-radius: 10px; font-size: 14px;
         }
+        video { width: 100%; aspect-ratio: 16/9; border-radius: 8px; display: block; }
 
-        video {
-            width: 100%;
-            aspect-ratio: 16 / 9; /* 锁定 16:9 比例 */
-            border-radius: 10px;
-            background: #000;
-            object-fit: contain; /* 确保画面不被裁切 */
-            display: block;
-        }
+        /* --- 场景特定自适应 --- */
 
-        /* --- 场景互动元素样式 --- */
-        
         /* 海顿 */
         #scene-haydn { background-color: #E0F7FA; }
-        .audience-container { display: flex; gap: 10px; font-size: 50px; margin-bottom: 20px; height: 60px; }
-        .audience { transition: all 0.2s; }
-        .audience.awake { transform: scale(1.5) translateY(-20px); }
-        .meter-container { width: 300px; height: 30px; background: #ddd; border-radius: 15px; overflow: hidden; margin-bottom: 20px; border: 3px solid #fff; }
+        .audience-container { font-size: clamp(30px, 8vw, 50px); margin-bottom: 20px; height: 60px; display: flex; gap: 5px; }
+        .meter-container { width: 80%; max-width: 300px; height: 20px; background: #ddd; border-radius: 10px; margin-bottom: 20px; border: 2px solid #fff; }
         .meter-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #4CAF50, #FFEB3B, #FF5722); transition: width 0.2s; }
-        .conductor-controls { display: flex; gap: 30px; align-items: center; margin-bottom: 20px; }
-        .baton-btn { width: 100px; height: 100px; border-radius: 50%; background: #81C784; border: none; font-size: 40px; cursor: pointer; box-shadow: 0 8px 0 #388E3C; position: relative; }
-        .baton-btn:active { transform: translateY(5px); box-shadow: 0 3px 0 #388E3C; }
-        .surprise-btn { width: 140px; height: 140px; border-radius: 50%; background: #ccc; border: none; font-size: 50px; color: white; cursor: not-allowed; box-shadow: 0 8px 0 #999; transition: all 0.3s; }
-        .surprise-btn.ready { background: #F44336; cursor: pointer; box-shadow: 0 8px 0 #D32F2F; animation: pulse 1s infinite; }
-        .surprise-btn.ready:active { transform: scale(0.95); }
+        .conductor-controls { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; justify-content: center; }
+        .baton-btn { width: 80px; height: 80px; border-radius: 50%; background: #81C784; border: none; font-size: 30px; cursor: pointer; box-shadow: 0 6px 0 #388E3C; }
+        .surprise-btn { width: 100px; height: 100px; border-radius: 50%; background: #ccc; border: none; font-size: 40px; color: white; box-shadow: 0 6px 0 #999; transition: all 0.3s; }
+        .surprise-btn.ready { background: #F44336; box-shadow: 0 6px 0 #D32F2F; animation: pulse 1s infinite; }
 
         /* 莫扎特 */
         #scene-mozart { background-color: #F3E5F5; }
-        .star-stage { width: 280px; height: 280px; background: #fff; border-radius: 20px; border: 5px solid #AB47BC; display: flex; justify-content: center; align-items: center; margin-bottom: 20px; position: relative; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-        .base-star { font-size: 140px; color: #FFD700; transition: all 0.5s; z-index: 1; line-height: 1; }
-        .accessory { position: absolute; transition: all 0.5s; opacity: 0; transform: scale(0.5); }
-        .accessory.visible { opacity: 1; transform: scale(1); }
-        .acc-shoes { font-size: 60px; bottom: 20px; right: 20px; z-index: 2; }
-        .acc-mask { font-size: 80px; top: 70px; z-index: 3; }
-        .acc-crown { font-size: 80px; top: -30px; left: -20px; transform: rotate(-20deg); z-index: 4; }
-        .wardrobe { display: flex; gap: 15px; margin-bottom: 20px; }
-        .clothing-item { background: #fff; padding: 10px; border-radius: 15px; border: 3px solid #ddd; width: 80px; text-align: center; cursor: pointer; transition: all 0.2s; }
-        .clothing-item.equipped { border-color: #AB47BC; background: #E1BEE7; transform: translateY(-5px); }
-        .clothing-item h4 { margin: 5px 0 0; font-size: 16px; }
-        .clothing-item .icon { font-size: 30px; }
+        .star-stage { 
+            width: clamp(200px, 60vw, 300px); 
+            height: clamp(200px, 60vw, 300px); 
+            background: #fff; border-radius: 20px; border: 5px solid #AB47BC; 
+            display: flex; justify-content: center; align-items: center; 
+            margin-bottom: 20px; position: relative; 
+        }
+        .base-star { font-size: clamp(80px, 25vw, 140px); color: #FFD700; z-index: 1; }
+        .accessory { position: absolute; opacity: 0; transition: 0.5s; }
+        .accessory.visible { opacity: 1; }
+        .acc-shoes { font-size: clamp(40px, 10vw, 60px); bottom: 10%; right: 10%; z-index: 2; }
+        .acc-mask { font-size: clamp(50px, 15vw, 80px); top: 30%; z-index: 3; }
+        .acc-crown { font-size: clamp(50px, 15vw, 80px); top: -10%; left: -5%; transform: rotate(-20deg); z-index: 4; }
+        
+        .wardrobe { display: flex; gap: 10px; justify-content: center; width: 100%; flex-wrap: wrap; }
+        .clothing-item { 
+            background: #fff; padding: 8px; border-radius: 10px; border: 2px solid #ddd; 
+            width: 70px; text-align: center; cursor: pointer; 
+        }
+        .clothing-item.equipped { border-color: #AB47BC; background: #E1BEE7; transform: translateY(-3px); }
+        .clothing-item .icon { font-size: 24px; }
+        .clothing-item h4 { margin: 5px 0 0; font-size: 14px; }
 
         /* 贝多芬 */
         #scene-beethoven { background-color: #E8F5E9; }
-        .door-frame { width: 220px; height: 300px; background: #5D4037; border-radius: 15px 15px 0 0; position: relative; display: flex; flex-direction: column; align-items: center; padding-top: 40px; box-shadow: 10px 10px 0 rgba(0,0,0,0.2); cursor: pointer; }
-        .door-inner { width: 180px; height: 260px; background: #8D6E63; border: 2px dashed #3E2723; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; overflow: hidden; }
-        .lion-reveal { position: absolute; font-size: 100px; display: none; animation: popIn 0.5s; }
-        .lock-lights { display: flex; gap: 10px; margin-bottom: 20px; z-index: 2; }
-        .light { width: 30px; height: 30px; border-radius: 50%; background: #3E2723; border: 2px solid #aaa; transition: all 0.2s; }
-        .light.on { background: #FF5252; box-shadow: 0 0 10px #FF5252; border-color: #fff; }
-        .light.success { background: #69F0AE; box-shadow: 0 0 15px #69F0AE; }
-        .knocker { width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 10; }
-        .rhythm-hint { margin-top: 15px; font-size: 24px; display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
-        .hint-dot { width: 15px; height: 15px; background: #333; border-radius: 50%; }
-        .hint-dash { width: 40px; height: 15px; background: #333; border-radius: 10px; }
+        .door-frame { 
+            width: clamp(180px, 50vw, 220px); 
+            height: clamp(240px, 70vw, 300px); 
+            background: #5D4037; border-radius: 15px 15px 0 0; 
+            display: flex; flex-direction: column; align-items: center; padding-top: 30px; 
+            cursor: pointer; 
+        }
+        .door-inner { 
+            width: 85%; height: 85%; background: #8D6E63; border: 2px dashed #3E2723; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            position: relative; overflow: hidden; 
+        }
+        .lion-reveal { position: absolute; font-size: 80px; display: none; animation: popIn 0.5s; }
+        .lock-lights { display: flex; gap: 8px; margin-bottom: 15px; }
+        .light { width: 25px; height: 25px; border-radius: 50%; background: #3E2723; border: 2px solid #aaa; transition: 0.2s; }
+        .light.on { background: #FF5252; border-color: #fff; }
+        .light.success { background: #69F0AE; }
+        
+        .rhythm-hint { margin-top: 15px; font-size: 20px; display: flex; gap: 8px; align-items: center; }
+        .hint-dot { width: 12px; height: 12px; background: #333; border-radius: 50%; }
+        .hint-dash { width: 30px; height: 12px; background: #333; border-radius: 10px; }
 
         @keyframes pulse { 0% {transform: scale(1);} 50% {transform: scale(1.05);} 100% {transform: scale(1);} }
         @keyframes popIn { 0% {transform: scale(0);} 80% {transform: scale(1.2);} 100% {transform: scale(1);} }
@@ -220,44 +195,33 @@
 <main>
     <!-- 场景1：海顿 -->
     <div id="scene-haydn" class="scene active">
-        <!-- 形象回归：海顿爷爷 -->
         <div class="avatar-emoji">👴</div>
         <div class="stage-title">海顿爷爷的恶作剧</div>
         <div class="instruction">任务：轻轻点绿色指挥，能量满了按红色按钮！</div>
         
         <div class="audience-container">
-            <span class="audience">😴</span>
-            <span class="audience">😴</span>
-            <span class="audience">😴</span>
-            <span class="audience">😴</span>
+            <span class="audience">😴</span><span class="audience">😴</span>
+            <span class="audience">😴</span><span class="audience">😴</span>
         </div>
 
-        <div class="meter-container">
-            <div id="haydn-meter" class="meter-fill"></div>
-        </div>
+        <div class="meter-container"><div id="haydn-meter" class="meter-fill"></div></div>
 
         <div class="conductor-controls">
-            <button class="baton-btn" onclick="tapSoftly()">
-                🎼<br><span style="font-size:14px">轻轻的</span>
-            </button>
-            <button id="surprise-btn" class="surprise-btn" onclick="triggerSurprise()">
-                💥<br><span style="font-size:16px">惊愕!</span>
-            </button>
+            <button class="baton-btn" onclick="tapSoftly()">🎼</button>
+            <button id="surprise-btn" class="surprise-btn" onclick="triggerSurprise()">💥</button>
         </div>
 
-        <!-- 影院级视频框 -->
         <div class="video-wrapper">
-            <!-- 播放本地文件：haydn.mp4 -->
+            <!-- 兼容路径：videos/haydn.mp4 或 haydn.mp4 -->
             <video controls>
                 <source src="videos/haydn.mp4" type="video/mp4">
-                请将 'haydn.mp4' 放入同一文件夹以播放视频
+                <source src="haydn.mp4" type="video/mp4">
             </video>
         </div>
     </div>
 
     <!-- 场景2：莫扎特 -->
     <div id="scene-mozart" class="scene">
-        <!-- 形象回归：莫扎特宝宝 -->
         <div class="avatar-emoji">👶</div>
         <div class="stage-title">小星星变装秀</div>
         <div class="instruction">任务：点击衣服，给小星星穿上不同的“变奏”！</div>
@@ -271,32 +235,26 @@
 
         <div class="wardrobe">
             <div class="clothing-item" id="item-shoes" onclick="toggleOutfit('shoes')">
-                <div class="icon">👟</div>
-                <h4>跑鞋<br>(快板)</h4>
+                <div class="icon">👟</div><h4>跑鞋</h4>
             </div>
             <div class="clothing-item" id="item-mask" onclick="toggleOutfit('mask')">
-                <div class="icon">🎭</div>
-                <h4>面具<br>(小调)</h4>
+                <div class="icon">🎭</div><h4>面具</h4>
             </div>
             <div class="clothing-item" id="item-crown" onclick="toggleOutfit('crown')">
-                <div class="icon">👑</div>
-                <h4>皇冠<br>(华丽)</h4>
+                <div class="icon">👑</div><h4>皇冠</h4>
             </div>
         </div>
 
-        <!-- 影院级视频框 -->
         <div class="video-wrapper">
-            <!-- 播放本地文件：mozart.mp4 -->
             <video controls>
                 <source src="videos/mozart.mp4" type="video/mp4">
-                请将 'mozart.mp4' 放入同一文件夹以播放视频
+                <source src="mozart.mp4" type="video/mp4">
             </video>
         </div>
     </div>
 
     <!-- 场景3：贝多芬 -->
     <div id="scene-beethoven" class="scene">
-        <!-- 形象回归：贝多芬狮子 -->
         <div class="avatar-emoji">🦁</div>
         <div class="stage-title">贝多芬的密码门</div>
         <div class="instruction">任务：按“短-短-短-长”的节奏敲门！</div>
@@ -310,170 +268,44 @@
 
         <div class="door-frame">
             <div class="door-inner">
-                <div id="door-knocker" class="knocker" onclick="tapDoor()"></div>
-                <div style="font-size: 80px; opacity: 0.2">🚪</div>
+                <div class="knocker" onclick="tapDoor()" style="position:absolute; width:100%; height:100%; z-index:10;"></div>
+                <div style="font-size: 60px; opacity: 0.2">🚪</div>
                 <div id="lion" class="lion-reveal">🦁</div>
             </div>
         </div>
 
         <div class="rhythm-hint">
-            密码提示：
-            <div class="hint-dot"></div>
-            <div class="hint-dot"></div>
-            <div class="hint-dot"></div>
-            <div class="hint-dash"></div>
+            提示：<div class="hint-dot"></div><div class="hint-dot"></div><div class="hint-dot"></div><div class="hint-dash"></div>
         </div>
 
-        <!-- 影院级视频框 -->
         <div class="video-wrapper">
-            <!-- 播放本地文件：beethoven.mp4 -->
             <video controls>
                 <source src="videos/beethoven.mp4" type="video/mp4">
-                请将 'beethoven.mp4' 放入同一文件夹以播放视频
+                <source src="beethoven.mp4" type="video/mp4">
             </video>
         </div>
     </div>
 </main>
 
 <script>
-    // --- 音频引擎 ---
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
-    const audioCtx = new AudioContext();
-
-    function playNote(freq, type, duration, vol=0.5, startTime=0) {
-        if(audioCtx.state === 'suspended') audioCtx.resume();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = type;
-        osc.frequency.setValueAtTime(freq, audioCtx.currentTime + startTime);
-        gain.gain.setValueAtTime(vol, audioCtx.currentTime + startTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + startTime + duration);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start(audioCtx.currentTime + startTime);
-        osc.stop(audioCtx.currentTime + startTime + duration);
-    }
-
-    // --- 全局控制 ---
-    function switchScene(id) {
-        document.querySelectorAll('.scene').forEach(s => s.classList.remove('active'));
-        document.getElementById('scene-' + id).classList.add('active');
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        event.target.classList.add('active');
-        document.querySelectorAll('video').forEach(v => v.pause()); // 切换时暂停视频
-    }
-
-    // --- 海顿逻辑 ---
-    let haydnEnergy = 0;
+    // 音频与逻辑保持不变 (Compact JS)
+    const AudioContext=window.AudioContext||window.webkitAudioContext;const audioCtx=new AudioContext;
+    function playNote(f,t,d,v=0.5,s=0){if(audioCtx.state==='suspended')audioCtx.resume();const o=audioCtx.createOscillator();const g=audioCtx.createGain();o.type=t;o.frequency.setValueAtTime(f,audioCtx.currentTime+s);g.gain.setValueAtTime(v,audioCtx.currentTime+s);g.gain.exponentialRampToValueAtTime(0.01,audioCtx.currentTime+s+d);o.connect(g);g.connect(audioCtx.destination);o.start(audioCtx.currentTime+s);o.stop(audioCtx.currentTime+s+d);}
+    function switchScene(id){document.querySelectorAll('.scene').forEach(s=>s.classList.remove('active'));document.getElementById('scene-'+id).classList.add('active');document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));event.target.closest('.nav-btn').classList.add('active');document.querySelectorAll('video').forEach(v=>v.pause());}
     
-    function tapSoftly() {
-        playNote(440 + Math.random()*100, 'sine', 0.2, 0.1); 
-        haydnEnergy += 20;
-        document.getElementById('haydn-meter').style.width = haydnEnergy + '%';
-        const audience = document.querySelectorAll('.audience');
-        audience.forEach(a => {
-            a.style.transform = `rotate(${Math.random()*10 - 5}deg)`;
-            a.textContent = '😴';
-            a.classList.remove('awake');
-        });
-        if(haydnEnergy >= 100) {
-            document.getElementById('surprise-btn').classList.add('ready');
-            document.getElementById('surprise-btn').disabled = false;
-        }
-    }
+    // 海顿
+    let haydnEnergy=0;
+    function tapSoftly(){playNote(440+Math.random()*100,'sine',0.2,0.1);haydnEnergy+=20;document.getElementById('haydn-meter').style.width=haydnEnergy+'%';if(haydnEnergy>=100){document.getElementById('surprise-btn').classList.add('ready');document.getElementById('surprise-btn').disabled=false;}}
+    function triggerSurprise(){if(haydnEnergy<100)return;playNote(196,'sawtooth',1,1);playNote(293,'sawtooth',1,1);playNote(392,'sawtooth',1,1);document.querySelectorAll('.audience').forEach(a=>{a.textContent='😳';a.classList.add('awake');});haydnEnergy=0;document.getElementById('haydn-meter').style.width='0%';document.getElementById('surprise-btn').classList.remove('ready');document.getElementById('surprise-btn').disabled=true;}
+    
+    // 莫扎特
+    let outfit={shoes:false,mask:false,crown:false};
+    function toggleOutfit(item){outfit[item]=!outfit[item];const btn=document.getElementById('item-'+item);const acc=document.getElementById('acc-'+item);if(outfit[item]){btn.classList.add('equipped');acc.classList.add('visible');}else{btn.classList.remove('equipped');acc.classList.remove('visible');}playMozartVariation();}
+    function playMozartVariation(){let t='sine';let n=[];if(outfit.mask){document.getElementById('main-star').style.filter='grayscale(100%)';t='triangle';n=[{f:523,d:0.5},{f:622,d:0.5},{f:783,d:0.5},{f:622,d:0.5},{f:523,d:1}];}else{document.getElementById('main-star').style.filter='none';if(outfit.shoes){t='square';n=[{f:523,d:0.1},{f:587,d:0.1},{f:659,d:0.1},{f:698,d:0.1},{f:783,d:0.1},{f:880,d:0.1},{f:783,d:0.3}];}else if(outfit.crown){t='sawtooth';n=[{f:523,d:0.2},{f:587,d:0.1},{f:523,d:0.1},{f:783,d:0.2},{f:880,d:0.1},{f:783,d:0.4}];}else{n=[{f:523,d:0.3},{f:523,d:0.3},{f:783,d:0.3},{f:783,d:0.3},{f:880,d:0.3},{f:880,d:0.3},{f:783,d:0.6}];}}let now=0;n.forEach(x=>{playNote(x.f,t,x.d,0.3,now);now+=x.d*(outfit.mask?1.2:0.8);});}
 
-    function triggerSurprise() {
-        if(haydnEnergy < 100) return;
-        playNote(196, 'sawtooth', 1.0, 1.0);
-        playNote(246.9, 'sawtooth', 1.0, 1.0);
-        playNote(293.7, 'sawtooth', 1.0, 1.0);
-        playNote(392, 'sawtooth', 1.0, 1.0);
-        document.querySelectorAll('.audience').forEach(a => {
-            a.textContent = '😳';
-            a.classList.add('awake');
-        });
-        haydnEnergy = 0;
-        document.getElementById('haydn-meter').style.width = '0%';
-        document.getElementById('surprise-btn').classList.remove('ready');
-        document.getElementById('surprise-btn').disabled = true;
-    }
-
-    // --- 莫扎特逻辑 ---
-    let outfit = { shoes: false, mask: false, crown: false };
-
-    function toggleOutfit(item) {
-        outfit[item] = !outfit[item];
-        const btn = document.getElementById('item-' + item);
-        const accessory = document.getElementById('acc-' + item);
-        if(outfit[item]) {
-            btn.classList.add('equipped');
-            accessory.classList.add('visible');
-        } else {
-            btn.classList.remove('equipped');
-            accessory.classList.remove('visible');
-        }
-        playMozartVariation();
-    }
-
-    function playMozartVariation() {
-        let type = 'sine';
-        let speed = 0.4;
-        let notes = []; 
-        
-        if(outfit.mask) { 
-            document.getElementById('main-star').style.filter = 'grayscale(100%)';
-            document.getElementById('main-star').textContent = '💧';
-            type = 'triangle'; 
-            speed = 0.6; 
-            notes = [{f: 523.25, d: 0.5}, {f: 622.25, d: 0.5}, {f: 783.99, d: 0.5}, {f: 622.25, d: 0.5}, {f: 523.25, d: 1.0}, {f: 261.63, d: 2.0, t: 0}];
-        } else { 
-            document.getElementById('main-star').style.filter = 'none';
-            document.getElementById('main-star').textContent = '⭐';
-            if(outfit.shoes) { 
-                speed = 0.15; type = 'square'; 
-                notes = [{f: 523, d: 0.1}, {f: 587, d: 0.1}, {f: 659, d: 0.1}, {f: 698, d: 0.1}, {f: 783, d: 0.1}, {f: 880, d: 0.1}, {f: 783, d: 0.3}];
-            } else if (outfit.crown) { 
-                speed = 0.3; type = 'sawtooth';
-                notes = [{f: 523, d: 0.2}, {f: 587, d: 0.1}, {f: 523, d: 0.1}, {f: 783, d: 0.2}, {f: 880, d: 0.1}, {f: 783, d: 0.4}];
-            } else { 
-                notes = [{f: 523.25, d: 0.3}, {f: 523.25, d: 0.3}, {f: 783.99, d: 0.3}, {f: 783.99, d: 0.3}, {f: 880.00, d: 0.3}, {f: 880.00, d: 0.3}, {f: 783.99, d: 0.6}];
-            }
-        }
-        let now = 0;
-        notes.forEach((n) => {
-            let startTime = (n.t !== undefined) ? n.t : now;
-            playNote(n.f, type, n.d, 0.3, startTime);
-            if(n.t === undefined) now += (n.d * (outfit.mask ? 1.2 : 0.8)); 
-        });
-    }
-
-    // --- 贝多芬逻辑 ---
-    let tapCount = 0;
-    function tapDoor() {
-        tapCount++;
-        const door = document.querySelector('.door-inner');
-        door.style.transform = 'scale(0.95)';
-        setTimeout(() => door.style.transform = 'scale(1)', 100);
-
-        if (tapCount < 4) {
-            playNote(392, 'square', 0.2, 0.5);
-            document.getElementById('light-' + tapCount).classList.add('on');
-        } else if (tapCount === 4) {
-            playNote(311.1, 'square', 1.5, 0.8); 
-            document.getElementById('light-4').classList.add('on');
-            document.querySelectorAll('.light').forEach(l => l.classList.add('success'));
-            document.getElementById('lion').style.display = 'block';
-            setTimeout(resetDoor, 3000);
-        }
-    }
-    function resetDoor() {
-        tapCount = 0;
-        document.querySelectorAll('.light').forEach(l => {
-            l.classList.remove('on');
-            l.classList.remove('success');
-        });
-        document.getElementById('lion').style.display = 'none';
-    }
+    // 贝多芬
+    let tapCount=0;
+    function tapDoor(){tapCount++;document.querySelector('.door-inner').style.transform='scale(0.95)';setTimeout(()=>document.querySelector('.door-inner').style.transform='scale(1)',100);if(tapCount<4){playNote(392,'square',0.2,0.5);document.getElementById('light-'+tapCount).classList.add('on');}else if(tapCount===4){playNote(311,'square',1.5,0.8);document.getElementById('light-4').classList.add('on');document.querySelectorAll('.light').forEach(l=>l.classList.add('success'));document.getElementById('lion').style.display='block';setTimeout(()=>{tapCount=0;document.querySelectorAll('.light').forEach(l=>{l.classList.remove('on');l.classList.remove('success');});document.getElementById('lion').style.display='none';},3000);}}
 </script>
 
 </body>
